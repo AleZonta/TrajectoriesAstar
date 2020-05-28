@@ -17,6 +17,8 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 import math
 
+from shapely import geometry
+
 
 class Point(object):
     __slots__ = ['x', 'y']
@@ -35,3 +37,6 @@ class Point(object):
 
     def to_key(self):
         return "{}-{}".format(self.x, self.y)
+
+    def to_real_point(self):
+        return geometry.Point(self.x, self.y)

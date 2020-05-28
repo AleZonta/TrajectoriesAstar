@@ -15,6 +15,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
+import logging
 import os
 
 from src.Experiment.Controller import Controller
@@ -22,30 +23,42 @@ from src.Loaders.Attractiveness import ForcedAttractiveness
 from src.Settings.args import args
 
 if __name__ == '__main__':
-    tra_path = args.data_path + args.tra_name
+    # create console handler
+    logger = logging.getLogger(args.name_exp)
+    logger.setLevel(logging.DEBUG)
+    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    ch = logging.StreamHandler()
+    ch.setLevel(logging.DEBUG)
+    ch.setFormatter(formatter)
+    # add the handlers to the logger
+    logger.addHandler(ch)
+    # create file handler
+    fh = logging.FileHandler(args.name_exp + '.log')
+    fh.setLevel(logging.DEBUG)
+    fh.setFormatter(formatter)
+    # add the handlers to the logger
+    logger.addHandler(fh)
+    logger.info("Starting experiment")
     apf_path = args.data_path + args.apf_name
 
-    a = Controller(path_trajectories=tra_path, path_apf=apf_path,
-                   name_log=args.name_exp,
-                   log_to_file=args.log_to_file,
-                   log_to_console=args.log_to_console)
-
-    d = ForcedAttractiveness()
-    v = d.v
-
+    logger.info("-------------------------- loading data")
+    a = Controller(path_apf=apf_path, name_exp=args.name_exp, log=logger)
+    d = ForcedAttractiveness(log=logger)
+    logger.info("-------------------------- data loaded")
     name_counter = 0
-    for vector in v:
+    for vector in d.v:
+        logger.info("Testing {} vector".format(vector))
+        name = "generate_tra_per_force"
+        path = "{}/{}_version_{}/".format(args.output_path, name, name_counter)
+        args.name_exp = "{}_version_{}".format(name, name_counter)
         try:
-            name = "generate_tra_per_force"
-            path = "{}/{}_exp{}/".format(args.output_path, name, name_counter)
-            args.name_exp = "{}_exp{}".format(name, name_counter)
             os.mkdir(path)
         except OSError:
-            print("Creation of the directory %s failed" % path)
+            logger.error("Creation of the directory %s failed" % path)
+            logger.error("Folder already present")
         else:
-            print("Successfully created the directory %s " % path)
+            logger.info("Successfully created the directory %s " % path)
+            a.set_vector_data(vector_data=vector)
+            a.initialise_individual_and_run(save_path=path, how_many=args.n_tra_generated, debug=True)
 
-        a.set_vector_data(vector_data=vector)
-        a.initialise_individual_and_run(save_path=path, how_many=args.n_tra_generated)
-
-        name_counter += 1
+            name_counter += 1

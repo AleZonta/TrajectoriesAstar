@@ -76,7 +76,7 @@ def is_in_list(list_of_points, point_to_check):
             return True
     return False
 
-def compute_charge_points(genome, genome_meaning, current_position, K, pre_matrix):
+def compute_charge_points(genome, current_position, K, pre_matrix):
     """
     Compute the attraction of the points
     :param genome: genome
@@ -89,9 +89,7 @@ def compute_charge_points(genome, genome_meaning, current_position, K, pre_matri
     """
     # now prematrix is the cell system optimised
     # start_time = time.time()
-    total_charge = pre_matrix.return_charge_from_point(current_position=current_position, genome=genome,
-                                                       genome_meaning=genome_meaning, K=K)
-
+    total_charge = pre_matrix.return_charge_from_point(current_position=current_position, genome=genome, K=K)
     # current_time = time.time()
     # time_from_start = current_time - start_time  # time in seconds
     # print(time_from_start)

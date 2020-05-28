@@ -21,38 +21,17 @@ import os
 
 import pickle
 
-from haversine import haversine
+from src.Settings.args import args
 
 
 class CollectionCells(object):
-    def __init__(self, matching, x_division, y_division, save_and_store=True):
-        self._list_cells = []
-        self.count_total = 0
-        self.not_assigned = 0
-        self._match_index_typology = matching
+    def __init__(self, x_division, y_division, save_and_store=True):
+        self._list_cells = {}
         self._x_division = x_division
         self._y_division = y_division
         self._save_and_store = save_and_store
-
-    def details_cell(self, logger):
-        """
-        Returns dimension in km of the cells used.
-        :param logger: logger used to print the info
-        :return:
-        """
-        sample_cell = self._list_cells[2]
-        coordinates = list(sample_cell.get_polygon_coords())
-        height = round(haversine(point1=coordinates[0], point2=coordinates[1]) * 1000, 2)
-        width = round(haversine(point1=coordinates[1], point2=coordinates[2]) * 1000, 2)
-        logger.debug("Dimension of the cell = {} x {} m".format(height, width))
-
-    def add_cell(self, cell):
-        """
-        add cell to the list of all the cells
-        :param cell: cell to add
-        :return:
-        """
-        self._list_cells.append(cell)
+        self.max_values = None
+        self.min_values = None
 
     def store_current_list_cells(self, name="division_cell_list"):
         """
@@ -76,31 +55,11 @@ class CollectionCells(object):
         """
         if not self._save_and_store:
             return False
-        root = os.path.dirname(os.path.abspath(__file__))
-        output_folder = root.replace("Helpers", "Data")
-        name_file = "{}_{}_by_{}".format(name, self._x_division, self._y_division)
-        print("{}/{}.pickle".format(output_folder, name_file))
-        if os.path.isfile("{}/{}.pickle".format(output_folder, name_file)):
-            self._list_cells = pickle.load(open("{}/{}.pickle".format(output_folder, name_file), 'rb'))
+        name_file = "{}_{}_by_{}_dict_version".format(name, self._x_division, self._y_division)
+        if os.path.isfile("{}/{}.pickle".format(args.data_path, name_file)):
+            self._list_cells = pickle.load(open("{}/{}.pickle".format(args.data_path, name_file), 'rb'))
             return True
         return False
-
-    def assign_point(self, point, index):
-        """
-        assign point to the correct cell
-        :param point: point to add
-        :param index: index of the typology of the point
-        :return:
-        """
-        found = False
-        for cell in self._list_cells:
-            if cell.is_inside(point=point):
-                cell.add_point(point=point, index=index)
-                self.count_total += 1
-                found = True
-                break
-        if not found:
-            self.not_assigned += 1
 
     def get_all_cells(self):
         """
@@ -108,16 +67,6 @@ class CollectionCells(object):
         :return: list of cells
         """
         return self._list_cells
-
-    def find_current_cell(self, point):
-        """
-        find cell containing point
-        :param point: point to check
-        :return:
-        """
-        for cell in self._list_cells:
-            if cell.is_inside(point=point):
-                return cell.id
 
     def find_current_cell_from_matrix_coord(self, point):
         """
@@ -161,18 +110,18 @@ class CollectionCells(object):
         :param id: id to find
         :return: cell
         """
-        for cell in self._list_cells:
-            if cell.id == id:
-                return cell
+        return self._list_cells[id]
 
     def load_mmap_data(self):
-        root = os.path.dirname(os.path.abspath(__file__))
-        output_folder = root.replace("Helpers", "Data").replace("Division", "")
-        name_file = "{}/cell_data_to_mmap.dat".format(output_folder)
+        name_file = "{}/cell_data_to_mmap.dat".format(args.data_path)
         data_input = np.memmap(name_file, dtype='float32', mode='r', shape=(154, 155, 6, 2, 1600))
         count = 0
-        for cell in self._list_cells:
+        for k, cell in self._list_cells.items():
             cell.matrix = data_input
             cell.index = count
             count += 1
 
+        name_file = "{}/indexing_fast.dat".format(args.data_path)
+        ndexing = np.memmap(name_file, dtype='int16', mode='r', shape=(6159, 6083, 2))
+        for k, cell in self._list_cells.items():
+            cell._indexing = ndexing

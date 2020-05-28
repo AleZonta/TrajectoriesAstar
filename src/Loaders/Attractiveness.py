@@ -19,7 +19,7 @@ import itertools
 
 
 class ForcedAttractiveness(object):
-    def __init__(self):
+    def __init__(self, log):
         # amenity
         # natural
         # office
@@ -27,4 +27,4 @@ class ForcedAttractiveness(object):
         # sport
         # building
         self.v = list(set(itertools.permutations([1, 1, 1, 1, 50, 100])))
-
+        log.info("Testing {} permutation of attraction".format(len(self.v)))

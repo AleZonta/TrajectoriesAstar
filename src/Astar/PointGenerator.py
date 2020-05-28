@@ -56,6 +56,6 @@ class PointGenerator(object):
                                        pre_matrix=self.pre_matrix)
         else:
             return astar(apf=apf, start=current_node, distance_target=total_distance,
-                         genome=genome, genome_meaning=genome_meaning,
+                         genome=genome,
                          values_matrix=values_matrix, K=K, pre_matrix=self.pre_matrix, x_value=x_value,
                          type_astar=self.type_astar)

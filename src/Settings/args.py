@@ -29,14 +29,15 @@ def prepare_parser():
     parser.add_argument("--type_generator", default="astar")
     parser.add_argument("--type_astar", type=int, default=1,
                         help="0 is mostly distance, 1 evolved average, 2 mostly apf, 3 real Astar")
-    parser.add_argument("--tra_name", default="small_sport.json")
-    parser.add_argument("--apf_name", default="the_right_one.csv")
-    parser.add_argument("--data_path", default="")
-    parser.add_argument("--output_path", default="")
+    parser.add_argument("--apf_name", default="the_right_one_fast")
+    parser.add_argument("--data_path", default="/Users/alessandrozonta/PycharmProjects/astar/data/")
+    parser.add_argument("--output_path", default="/Users/alessandrozonta/PycharmProjects/astar/output/")
     parser.add_argument("--name_exp", default="test_astar")
     parser.add_argument("--log_to_file", action='store_true')
     parser.add_argument("--log_to_console", action='store_true')
-    parser.add_argument("--n_tra_generated", type=int, default=50)
+    parser.add_argument("--n_tra_generated", type=int, default=1)
+    parser.add_argument("--x_value", type=int, default=50)
+    parser.add_argument("--total_distance_to_travel", type=int, default=5000)
 
     return parser
 

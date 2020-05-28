@@ -24,20 +24,18 @@ from src.Astar.PointGenerator import PointGenerator
 from src.Utils.Point import Point
 from src.Utils.RandomWrappers import random_wrapper_lognorm
 
-K = 1000
+K = 0.1
 TIMESTEP = 1
 
 
 class TrajectoryGeneration(object):
-    def __init__(self, length, logger, values_matrix, apf, genome_meaning, pre_loaded_points,
-                 type_of_generator, pre_matrix, type_astar, genotype=None):
-        super().__init__(length, logger, genotype)
+    def __init__(self, x_value, values_matrix, apf, genome_meaning, pre_loaded_points,
+                 type_of_generator, pre_matrix, type_astar, genotype=None, total_distance_to_travel=5000):
         self.path = []
         self.tra = []
         self.tra_real_coordinates = []
-        self._total_distance = 0
 
-        self._x_value = length + 4 ## TODO define
+        self._x_value = x_value
 
         self.genome = genotype
         #
@@ -49,7 +47,7 @@ class TrajectoryGeneration(object):
         #
         self.generator = PointGenerator(typology_needed=type_of_generator, pre_matrix=self._pre_matrix,
                                         type_astar=type_astar)
-        self._total_distance = 5000
+        self._total_distance_to_travel = total_distance_to_travel
 
     def create_trajectory(self, random_seed, idx):
         """
@@ -73,8 +71,6 @@ class TrajectoryGeneration(object):
         self.path = []
         self.tra = []
         self.tra_real_coordinates = []
-        self._total_distance = 0
-
         distances = []
         while self.path is None or len(self.path) == 0:
             if self.path is None:
@@ -84,11 +80,11 @@ class TrajectoryGeneration(object):
             current_node = Point(x=pre_loaded_point[0], y=pre_loaded_point[1])
             self.path.append(current_node)
             # get the path using the methodology chosen
-            self.path = self.generator.get_path(total_distance=self._total_distance,
+            self.path = self.generator.get_path(total_distance=self._total_distance_to_travel,
                                                 genome=self.genome, genome_meaning=self._genome_meaning,
                                                 values_matrix=self._values_matrix, K=K, distances=distances,
                                                 current_node=current_node, apf=self._apf.shape,
-                                                x_value=self.genome[self._x_value])
+                                                x_value=self._x_value)
 
         if len(distances) == 0:
             for i in range(len(self.path) - 1):
@@ -104,9 +100,6 @@ class TrajectoryGeneration(object):
         i = 0
         while i < len(self.path) - 1:
             # speed is in metres per second
-            std = self.genome[self._index_std_speed]
-            if std == 0:
-                std += 0.000001
             speed = random_wrapper_lognorm(mean=0, std=1)
             # space is in metres
             space = TIMESTEP * speed

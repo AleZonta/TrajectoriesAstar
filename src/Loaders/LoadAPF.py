@@ -15,12 +15,12 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
-
-import logging
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 import tqdm as tqdm
+
+from src.Settings.args import args
 
 
 class LoadAPF(object):
@@ -42,7 +42,9 @@ class LoadAPF(object):
         """
         if self._log is not None:
             self._log.debug("Loading APF from file...")
-        self.apf = pd.read_csv(self._path, dtype='int8')
+        # self.apf = pd.read_feather(self._path)
+        import feather
+        self.apf = feather.read_dataframe(self._path)
         # self.apf.info(verbose=False)
         if self._log is not None:
             self._log.info("APF with routing system loaded {}".format(self.apf.shape))
@@ -74,29 +76,6 @@ class LoadAPF(object):
 
             plt.show()
 
-    def print_heatmap(self, save_name="heatmap.png"):
-        """
-        Prints heat map of the APF and save it to file
-        :param save_name: name of the file to save
-        :return:
-        """
-        if self.apf is not None:
-            if self._log is not None:
-                self._log.debug("Saving heat map...")
-
-            plt.pcolor(self.apf)
-            plt.axis('off')
-            plt.colorbar()
-            plt.clim(0, 100)
-
-            plt.savefig(save_name, dpi=50, facecolor='w', edgecolor='w', orientation='portrait',
-                        papertype=None,
-                        format=None, transparent=False, bbox_inches=None, pad_inches=0.1,
-                        frameon=None, )
-            plt.close()
-            if self._log is not None:
-                self._log.info("Heat map saved.")
-
     def invert_apf(self):
         """
         Invert the APF
@@ -117,7 +96,11 @@ class LoadAPF(object):
         if self._log is not None:
             self._log.info("Loading real coordinate and creating matching for the indexes.")
         # loading coordinates
-        self.coordinates = LoadConfigs.configurations["coordinates"]
+        self.coordinates = {
+            "north": args.north,
+            "south": args.south,
+            "east": args.east,
+            "west": args.west}
 
         # resolution image
         x_max = self.apf.shape[0]
@@ -127,27 +110,3 @@ class LoadAPF(object):
         # now the index correspond to a real coordinate
         self.x_values = np.linspace(start=self.coordinates["west"], stop=self.coordinates["east"], num=x_max)
         self.y_values = np.linspace(start=self.coordinates["south"], stop=self.coordinates["north"], num=y_max)
-
-    def check_if_something_is_there(self):
-        """
-        Chesk if the APF has data on it
-        :return:
-        """
-        if self.apf is not None:
-            x_max = self.apf.shape[0]
-            y_max = self.apf.shape[1]
-            count = 0
-
-            all_the_indexes = []
-            for x in range(0, x_max):
-                for y in range(0, y_max):
-                    all_the_indexes.append((x, y))
-
-            for i in tqdm.tqdm(range(len(all_the_indexes))):
-                x = all_the_indexes[i][0]
-                y = all_the_indexes[i][1]
-                if self.apf.loc[x][y] != 0:
-                    print("{}, {}, {}".format(x,y,self.apf.loc[x][y]))
-                    count += 1
-
-            self._log.debug("No zeros elements {}".format(count))

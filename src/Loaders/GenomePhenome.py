@@ -23,7 +23,8 @@ import pickle
 from pathlib import Path
 
 import numpy as np
-from tqdm import trange
+
+from src.Settings.args import args
 
 
 class GenomeMeaning(object):
@@ -34,7 +35,7 @@ class GenomeMeaning(object):
     in the map
     """
 
-    def __init__(self, granularity, logger=None):
+    def __init__(self, logger=None):
         self._log = logger
         self._types = None
         self.number_typologies = 0
@@ -44,8 +45,7 @@ class GenomeMeaning(object):
         self.list_of_names_per_genome = []
         self.link_main_obj_and_small_objs = {}
         self._features = 0
-        self._granularity = granularity
-        self._order_name_and_position = None
+        self.order_name_and_position = None
         self.method_mmap = False
 
     def load_data(self, test, performance=True):
@@ -63,8 +63,7 @@ class GenomeMeaning(object):
         :return:
         """
         # loading coordinates
-        root = os.path.dirname(os.path.abspath(__file__))
-        phenotype_file = root.replace("Loaders", "") + "/Settings/Phenotype"
+        phenotype_file = args.data_path + "/Phenotype"
         with open(phenotype_file, 'r') as f:
             self._types = json.load(f)
         if self._log is not None:
@@ -78,22 +77,20 @@ class GenomeMeaning(object):
                 self.name_and_details.update(
                     {k.lower(): [x.lower() if x.lower() != "others" else "others_" + k.lower() for x in el[k]]})
 
-        if self._granularity == 0:
-            self._log.debug("Typology loaded {}".format(self.name_typologies))
-        else:
-            self._log.debug("Typology loaded {}".format(self.name_and_details))
 
-        self._log.warning("Code commented for performances, enable it if needed")
+        self._log.debug("Typology loaded {}".format(self.name_typologies))
 
-        root = os.path.dirname(os.path.abspath(__file__))
-        mmap_file = root.replace("Loaders", "") + "Data/name_and_position.dat"
+        mmap_file = "{}/name_and_position.dat".format(args.data_path)
         if os.path.isfile(mmap_file):
             self._log.debug("mmap file exist, loading it")
 
             self.name_and_position = np.memmap(mmap_file, dtype='float32', mode='r', shape=(56, 938737, 2))
 
-            with open('{}Data/order_on_mmap.pickle'.format(root.replace("Loaders", "")), 'rb') as handle:
-                self._order_name_and_position = pickle.load(handle)
+            with open('{}/order_on_mmap.pickle'.format(args.data_path), 'rb') as handle:
+                self.order_name_and_position = pickle.load(handle)
+
+            with open('{}/name_typology.pickle'.format(args.data_path), 'rb') as handle:
+                self.name_typologies = pickle.load(handle)
             self.method_mmap = True
         else:
             self.name_and_position = {}
@@ -144,118 +141,3 @@ class GenomeMeaning(object):
         if performance:
             self._types = None
             self.name_and_details = None
-
-    def _save_name_and_position_to_mmap(self):
-        # save mmap name_and_position
-        array = np.zeros((56, 938737, 2), dtype='float32')
-        element_position = 0
-        order = {}
-        for key, value in self.name_and_position.items():
-            for sub_key, sub_values in value.items():
-                # vector_positions = self.name_and_position[key][sub_key]
-                order.update({element_position: sub_key})
-                for i in trange(len(sub_values)):
-                    array[element_position, i] = np.array(sub_values[i], dtype='float32')
-
-                element_position += 1
-
-        with open('order_on_mmap.pickle', 'wb') as handle:
-            pickle.dump(order, handle, protocol=pickle.HIGHEST_PROTOCOL)
-
-        filename = "name_and_position.dat"
-        fp = np.memmap(filename, dtype='float32', mode='w+', shape=(56, 938737, 2))
-        fp[:] = array[:]
-        del fp
-
-        self._log.info("Saved mmap!")
-
-    def load_fake_data(self):
-        """
-        Load fake data in order to understand if the APF and A* works
-        It loads a new setting with positions from a file
-        :return:
-        """
-
-        self.name_typologies = ["fake"]
-        with open("/Users/alessandrozonta/PycharmProjects/GTEA/Data/coordinates_fake_data.txt") as f:
-            lines = f.readlines()
-        list_of_points = []
-        for line in lines:
-            coordinates = line.split(",")
-            list_of_points.append((float(coordinates[0]), float(coordinates[1].replace("\n", ""))))
-        current_dict = {"others_fake": list_of_points}
-
-        self.name_and_position = {"fake": current_dict}
-
-        # erase all the other staff
-
-    def get_length_genome_only_objects(self):
-        """
-        I think it is obvious what this method does.
-        If it is not,to complain, send an email to me.
-        :return: read the name of the function to understand
-        """
-        if self._granularity == 0:
-            return self.number_typologies
-        else:
-            return len(self.list_of_names_per_genome)
-
-    def from_genome_to_value_describing_object(self, name_object):
-        """
-        Genome is constructed using the number of elements loaded in this class.
-
-        genome is long len(self.list_of_names_per_genome) + other details.
-
-        This function receives as input the name of the object I need the charge for.
-        Iterating among the self.name_and_details, it finds the index corresponding to
-        the name and it returns the index for the genome
-
-        :param name_object: object to find the index
-        :return: int value representing index in the genome corresponding to the name
-        """
-        if self._granularity == 0:
-            return self.name_typologies.index(name_object)
-            # return self.name_typologies.index(self.link_main_obj_and_small_objs[name_object])
-        else:
-            return self.list_of_names_per_genome.index(name_object)
-
-    def get_number_features(self):
-        """
-        Return the number of features needed for the network
-        With feature now we count the number of total objects presents in the area.
-        TODO check if the number is too damn high. Otherwise try some combination
-        :return: number of features
-        """
-        if self._features == 0:
-            if self._granularity == 0:
-                self._features = self.number_typologies
-            else:
-                self._features = len(self._order_name_and_position.keys())
-                # typology = self.name_and_position.keys()
-                # for key in typology:
-                #     self._features += len(self.name_and_position[key].keys())
-        return self._features
-
-    def get_points_inside_area(self, limits):
-        """
-        given the limits return the POI inside the area
-        :param limits: list of limits
-        :return: POIs in the area
-        """
-        max_xs = limits[0]
-        min_xs = limits[1]
-        max_ys = limits[2]
-        min_ys = limits[3]
-
-        final_result = {}
-        for t in self.name_typologies:
-            areas = self.name_and_position[t]
-
-            list_of_points_here = []
-            for key, value in areas.items():
-                for p in value:
-                    if min_xs < p[1] < max_xs and min_ys < p[0] < max_ys:
-                        list_of_points_here.append(p)
-            final_result[t] = list_of_points_here
-        return final_result
-

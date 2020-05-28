@@ -47,7 +47,7 @@ class Node(object):
         return self.f < other.f
 
 
-def astar(apf, start, distance_target, genome, genome_meaning, values_matrix, K, pre_matrix, x_value,
+def astar(apf, start, distance_target, genome, values_matrix, K, pre_matrix, x_value,
           type_astar):
     """
     Returns a list of tuples as a path from the given start to the given end in the given maze
@@ -60,11 +60,9 @@ def astar(apf, start, distance_target, genome, genome_meaning, values_matrix, K,
     :param start: starting point
     :param distance_target: distance from the target (total length trip)
     :param genome: genome
-    :param genome_meaning: meaning if every pos of the genome
     :param values_matrix: values to translate cells to coordinates
     :param K: constant for computing charge
     :param pre_matrix: pre computation of distance from the cell to the objects
-    :param end_point: target node
     :param type_astar: typology of the astar wanted
     """
     # make x_value a percentege of the total distance target
@@ -185,8 +183,7 @@ def astar(apf, start, distance_target, genome, genome_meaning, values_matrix, K,
             #                             (values_matrix[0][end_node.position.x],
             #                              values_matrix[1][end_node.position.y])) * 1000  # in metres
 
-            child.h = abs(_compute_h(distance_to_end=distance_to_end, genome=genome,
-                                     genome_meaning=genome_meaning, type_astar=type_astar,
+            child.h = abs(_compute_h(distance_to_end=distance_to_end, genome=genome, type_astar=type_astar,
                                      current_position=child.position, K=K, pre_matrix=pre_matrix, x_value=x_value))
 
             total_g_normalised = _standard_normalisation(old_value=child.g, old_min=0, old_max=distance_target + 100,
@@ -227,7 +224,7 @@ def _standard_normalisation(old_value, old_min, old_max, new_min, new_max):
     return (((old_value - old_min) * (new_max - new_min)) / (old_max - old_min)) + new_min
 
 
-def _compute_h(distance_to_end, genome, genome_meaning, current_position, K,
+def _compute_h(distance_to_end, genome, current_position, K,
                pre_matrix, x_value, type_astar):
     """
     Custom way to compute the estimation for the distance to the target
@@ -248,7 +245,6 @@ def _compute_h(distance_to_end, genome, genome_meaning, current_position, K,
 
     if type_astar == 0:
         total_charge = compute_charge_points(genome=genome,
-                                             genome_meaning=genome_meaning,
                                              current_position=current_position, K=K, pre_matrix=pre_matrix)
         try:
             value = distance_to_end / (total_charge / total_charge - 0.005)
@@ -256,7 +252,6 @@ def _compute_h(distance_to_end, genome, genome_meaning, current_position, K,
             value = distance_to_end
     elif type_astar == 1:  # balanced attraction and distance
         total_charge = compute_charge_points(genome=genome,
-                                             genome_meaning=genome_meaning,
                                              current_position=current_position, K=K, pre_matrix=pre_matrix)
 
         # need to balance the distance and the attractiveness
@@ -277,7 +272,6 @@ def _compute_h(distance_to_end, genome, genome_meaning, current_position, K,
         # value = total_charge_normalised
     elif type_astar == 2:  # only attraction
         total_charge = compute_charge_points(genome=genome,
-                                             genome_meaning=genome_meaning,
                                              current_position=current_position, K=K, pre_matrix=pre_matrix)
         value = 100 / total_charge
     elif type_astar == 3:  # only distance to end
