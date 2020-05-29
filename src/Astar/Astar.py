@@ -19,7 +19,7 @@ import heapq
 
 from haversine import haversine
 
-from src.Utils.Funcs import list_neighbours, compute_charge_points
+from src.Utils.Funcs import list_neighbours, compute_charge_points, compute_fintess_trajectory
 
 
 class Node(object):
@@ -46,6 +46,17 @@ class Node(object):
     def __lt__(self, other):
         return self.f < other.f
 
+
+def return_best_path_so_far(current_node):
+    path = []
+    current = current_node
+    while current is not None:
+        path.append(current.position)
+        current = current.parent
+    # print(open_queue)
+    # print(closed_list)
+    # print(path)
+    return path[::-1]  # Return reversed path
 
 def astar(apf, start, distance_target, genome, values_matrix, K, pre_matrix, x_value,
           type_astar):
@@ -134,15 +145,7 @@ def astar(apf, start, distance_target, genome, values_matrix, K, pre_matrix, x_v
             #     myfile.write("------------------ \n")
             #     myfile.write("------------------ \n")
 
-            path = []
-            current = current_node
-            while current is not None:
-                path.append(current.position)
-                current = current.parent
-            # print(open_queue)
-            # print(closed_list)
-            # print(path)
-            return path[::-1]  # Return reversed path
+            return_best_path_so_far(current_node=current_node)
 
         # Generate children
         points = list_neighbours(x_value=current_node.position.x, y_value=current_node.position.y, apf=apf)
@@ -184,10 +187,12 @@ def astar(apf, start, distance_target, genome, values_matrix, K, pre_matrix, x_v
             #                              values_matrix[1][end_node.position.y])) * 1000  # in metres
 
             child.h = abs(_compute_h(distance_to_end=distance_to_end, genome=genome, type_astar=type_astar,
-                                     current_position=child.position, K=K, pre_matrix=pre_matrix, x_value=x_value))
+                                     current_position=child.position, K=K, pre_matrix=pre_matrix, x_value=x_value,
+                                     tra_moved_so_far=return_best_path_so_far(current_node=current_node)))
 
             total_g_normalised = _standard_normalisation(old_value=child.g, old_min=0, old_max=distance_target + 100,
                                                          new_min=0, new_max=10)
+            # now higher is the most attractive
             child.f = -(total_g_normalised + child.h)
             # child.f = -child.h
 
@@ -225,7 +230,7 @@ def _standard_normalisation(old_value, old_min, old_max, new_min, new_max):
 
 
 def _compute_h(distance_to_end, genome, current_position, K,
-               pre_matrix, x_value, type_astar):
+               pre_matrix, x_value, type_astar, tra_moved_so_far):
     """
     Custom way to compute the estimation for the distance to the target
     The idea is to have the heart distance to the target divided by the attraction of the cell
@@ -240,17 +245,11 @@ def _compute_h(distance_to_end, genome, current_position, K,
     :param K: constant for the computation of the charge
     :param pre_matrix: pre computation of distance from the cell to the objects
     :param type_astar: typology of the astar wanted
+    :param tra_moved_so_far: trajectory moved so far
     :return: value h needed from the A* algorithm
     """
 
-    if type_astar == 0:
-        total_charge = compute_charge_points(genome=genome,
-                                             current_position=current_position, K=K, pre_matrix=pre_matrix)
-        try:
-            value = distance_to_end / (total_charge / total_charge - 0.005)
-        except Exception as e:
-            value = distance_to_end
-    elif type_astar == 1:  # balanced attraction and distance
+    if type_astar == 0:  # balanced attraction and distance
         total_charge = compute_charge_points(genome=genome,
                                              current_position=current_position, K=K, pre_matrix=pre_matrix)
 
@@ -269,13 +268,29 @@ def _compute_h(distance_to_end, genome, current_position, K,
         distance_to_end_normalised = _standard_normalisation(old_value=distance_to_end, old_min=0, old_max=10000,
                                                              new_min=0, new_max=10)
         value = (1 - delta) * total_charge_normalised + delta * distance_to_end_normalised
+        # now higher it is, better it is
         # value = total_charge_normalised
-    elif type_astar == 2:  # only attraction
-        total_charge = compute_charge_points(genome=genome,
-                                             current_position=current_position, K=K, pre_matrix=pre_matrix)
-        value = 100 / total_charge
-    elif type_astar == 3:  # only distance to end
-        value = distance_to_end
+    elif type_astar == 1:  # movement to the highest fitness achievable balanced attraction and distance
+        total_charge = compute_fintess_trajectory(tra_moved_so_far=tra_moved_so_far)
+
+        if total_charge < -700:
+            total_charge = -700
+        # need to balance the distance and the attractiveness
+        # distance to end vs total_charge point.
+        # value = 100 / (max(0, (x_value * 100) - distance_to_end) + total_charge)
+        # value = max(0, (x_value * 100) - distance_to_end) + total_charge
+        delta = (max(0, x_value - distance_to_end)) / (x_value + 0.000001)
+
+        # need to normalise the values
+        # for the total_charge we apply the Z-score: (value - mean) / std
+        # mean and std have been computed in advance
+        # but now I will use min max normaliser
+        total_charge_normalised = _standard_normalisation(old_value=total_charge, old_min=-700, old_max=601, new_min=0,
+                                                          new_max=10)
+        distance_to_end_normalised = _standard_normalisation(old_value=distance_to_end, old_min=0, old_max=10000,
+                                                             new_min=0, new_max=10)
+        value = (1 - delta) * total_charge_normalised + delta * distance_to_end_normalised
+        # now higher it is, better it is
     else:
         raise Exception("astar typology not implemented")
 

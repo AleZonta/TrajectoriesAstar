@@ -15,6 +15,10 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
+import numpy as np
+from scipy.spatial import distance
+
+from src.Helpers.Fitness.ValueGraphFitness import get_fitness_value
 from src.Utils.Point import Point
 
 
@@ -76,6 +80,78 @@ def is_in_list(list_of_points, point_to_check):
             return True
     return False
 
+
+def _get_direction(current_point, next_point):
+    x_value = int(current_point.x)
+    y_value = int(current_point.y)
+    x_value_next = int(next_point.x)
+    y_value_next = int(next_point.y)
+
+    diff_x = x_value_next - x_value
+    diff_y = y_value_next - y_value
+    if diff_x == 1 and diff_y == -1:
+        return [1, 0, 0, 0, 0, 0, 0, 0]
+    elif diff_x == 0 and diff_y == -1:
+        return [0, 1, 0, 0, 0, 0, 0, 0]
+    elif diff_x == -1 and diff_y == -1:
+        return [0, 0, 1, 0, 0, 0, 0, 0]
+    elif diff_x == -1 and diff_y == 0:
+        return [0, 0, 0, 1, 0, 0, 0, 0]
+    elif diff_x == -1 and diff_y == 1:
+        return [0, 0, 0, 0, 1, 0, 0, 0]
+    elif diff_x == 0 and diff_y == 1:
+        return [0, 0, 0, 0, 0, 1, 0, 0]
+    elif diff_x == 1 and diff_y == 1:
+        return [0, 0, 0, 0, 0, 0, 1, 0]
+    elif diff_x == 1 and diff_y == 0:
+        return [0, 0, 0, 0, 0, 0, 0, 1]
+    else:
+        raise Exception("{} and {} not present".format(diff_x, diff_y))
+
+
+def compute_fintess_trajectory(tra_moved_so_far):
+    # now I have trajectory and direction, need to compute the fitness
+    # as distance I am using the number of timesteps of the trajectories
+    total_length = len(tra_moved_so_far)
+    directions = [_get_direction(current_point=tra_moved_so_far[ii - 1], next_point=tra_moved_so_far[ii])
+                  for ii in range(1, len(tra_moved_so_far))]
+    # compute the curliness of the tra
+    distances = [distance.euclidean(directions[j - 1], directions[j]) for j in range(1, len(directions))]
+    if len(distances) > 0:
+        curliness = np.mean(np.array(distances))
+        if np.isnan(curliness):
+            curliness = 0.0
+    else:
+        curliness = 0.0
+    vector_distances = []
+    if len(tra_moved_so_far) > 0:
+        starting_point = [tra_moved_so_far[0].x, tra_moved_so_far[0].y]
+        # compute distance to further point
+        vector_distances = [distance.cityblock(starting_point, [tra_moved_so_far[idx].x, tra_moved_so_far[idx].y]) for
+                            idx
+                            in range(1, len(tra_moved_so_far) - 1)]
+
+    if len(vector_distances) > 0:
+        further_distance_to_point = max(vector_distances)
+    else:
+        further_distance_to_point = 0
+
+    distance_to_middle_point = 0
+    distance_to_end_point = 0
+    if len(tra_moved_so_far) > 0:
+        starting_point = [tra_moved_so_far[0].x, tra_moved_so_far[0].y]
+        # compute distance to middle point
+        middle_point = tra_moved_so_far[int(len(tra_moved_so_far) / 2)]
+        distance_to_middle_point = distance.cityblock(starting_point, [middle_point.x, middle_point.y])
+        # compute distance to end
+        end_point = tra_moved_so_far[len(tra_moved_so_far) - 1]
+        distance_to_end_point = distance.cityblock(starting_point, [end_point.x, end_point.y])
+
+    out, _, _, _ = get_fitness_value(length=total_length, curliness=curliness,
+                                     further_distance=further_distance_to_point)
+    return out
+
+
 def compute_charge_points(genome, current_position, K, pre_matrix):
     """
     Compute the attraction of the points
@@ -95,6 +171,7 @@ def compute_charge_points(genome, current_position, K, pre_matrix):
     # print(time_from_start)
     return total_charge
 
+
 def keep_only_points_on_street(apf, points):
     """
     Check if the points provided are on a route
@@ -108,4 +185,3 @@ def keep_only_points_on_street(apf, points):
         if apf.iloc[int(p.x)][int(p.y)] != 0:
             points_on_street.append(p)
     return points_on_street
-

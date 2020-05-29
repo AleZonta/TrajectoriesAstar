@@ -43,6 +43,7 @@ def save_data(vector_data, save_path, name, version):
     tra_path_real = "{}/{}_{}.pickle".format(save_path, name, version)
     pickle.dump(all_real_points, open(tra_path_real, 'wb'))
 
+
 class Controller(object):
     def __init__(self, path_apf, name_exp, log):
         self._path_apf = path_apf
@@ -116,4 +117,3 @@ class Controller(object):
         save_data(vector_data=total_paths, save_path=save_path, name="paths", version=version)
 
         self._logger.debug("Trajectories generated")
-

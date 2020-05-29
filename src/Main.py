@@ -33,7 +33,7 @@ if __name__ == '__main__':
     # add the handlers to the logger
     logger.addHandler(ch)
     # create file handler
-    fh = logging.FileHandler(args.name_exp + '.log')
+    fh = logging.FileHandler("{}/{}.log".format(args.output_path, args.name_exp))
     fh.setLevel(logging.DEBUG)
     fh.setFormatter(formatter)
     # add the handlers to the logger

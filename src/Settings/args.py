@@ -27,8 +27,8 @@ def prepare_parser():
     parser.add_argument("--east", type=float, default=14.8)
     parser.add_argument("--west", type=float, default=14.1)
     parser.add_argument("--type_generator", default="astar")
-    parser.add_argument("--type_astar", type=int, default=1,
-                        help="0 is mostly distance, 1 evolved average, 2 mostly apf, 3 real Astar")
+    parser.add_argument("--type_astar", type=int, default=0, choices=[0, 1],
+                        help="0 balance attraction and distance, 1 balanced fitness and distancw")
     parser.add_argument("--apf_name", default="the_right_one_fast")
     parser.add_argument("--data_path", default="/Users/alessandrozonta/PycharmProjects/astar/data/")
     parser.add_argument("--output_path", default="/Users/alessandrozonta/PycharmProjects/astar/output/")
@@ -38,7 +38,8 @@ def prepare_parser():
     parser.add_argument("--n_tra_generated", type=int, default=1)
     parser.add_argument("--x_value", type=int, default=50)
     parser.add_argument("--total_distance_to_travel", type=int, default=5000)
-
+    parser.add_argument("--point_distance", type=eval, help="Select witch term to use for fitness only distance to "
+                                                            "central point")
     return parser
 
 
