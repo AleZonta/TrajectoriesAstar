@@ -17,6 +17,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 import logging
 import os
+import sys
 
 from src.Experiment.Controller import Controller
 from src.Loaders.Attractiveness import ForcedAttractiveness
@@ -32,6 +33,15 @@ if __name__ == '__main__':
     ch.setFormatter(formatter)
     # add the handlers to the logger
     logger.addHandler(ch)
+
+    path = "{}/{}/".format(args.output_path, args.name_exp)
+    try:
+        os.mkdir(path)
+    except OSError:
+        logger.error("Experiment already present")
+        sys.exit()
+    args.output_path = path
+
     # create file handler
     fh = logging.FileHandler("{}/{}.log".format(args.output_path, args.name_exp))
     fh.setLevel(logging.DEBUG)
@@ -61,4 +71,4 @@ if __name__ == '__main__':
             a.set_vector_data(vector_data=vector)
             a.initialise_individual_and_run(save_path=path, how_many=args.n_tra_generated, debug=True)
 
-            name_counter += 1
+        name_counter += 1

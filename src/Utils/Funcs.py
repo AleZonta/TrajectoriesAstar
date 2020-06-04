@@ -149,7 +149,7 @@ def compute_fintess_trajectory(tra_moved_so_far):
 
     out, _, _, _ = get_fitness_value(length=total_length, curliness=curliness,
                                      further_distance=further_distance_to_point)
-    return out
+    return out, [total_length, curliness, further_distance_to_point, distance_to_middle_point, distance_to_end_point]
 
 
 def compute_charge_points(genome, current_position, K, pre_matrix):
@@ -185,3 +185,5 @@ def keep_only_points_on_street(apf, points):
         if apf.iloc[int(p.x)][int(p.y)] != 0:
             points_on_street.append(p)
     return points_on_street
+
+

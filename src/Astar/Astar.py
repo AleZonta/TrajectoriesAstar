@@ -58,6 +58,7 @@ def return_best_path_so_far(current_node):
     # print(path)
     return path[::-1]  # Return reversed path
 
+
 def astar(apf, start, distance_target, genome, values_matrix, K, pre_matrix, x_value,
           type_astar):
     """
@@ -145,7 +146,7 @@ def astar(apf, start, distance_target, genome, values_matrix, K, pre_matrix, x_v
             #     myfile.write("------------------ \n")
             #     myfile.write("------------------ \n")
 
-            return_best_path_so_far(current_node=current_node)
+            return return_best_path_so_far(current_node=current_node)
 
         # Generate children
         points = list_neighbours(x_value=current_node.position.x, y_value=current_node.position.y, apf=apf)
@@ -188,7 +189,8 @@ def astar(apf, start, distance_target, genome, values_matrix, K, pre_matrix, x_v
 
             child.h = abs(_compute_h(distance_to_end=distance_to_end, genome=genome, type_astar=type_astar,
                                      current_position=child.position, K=K, pre_matrix=pre_matrix, x_value=x_value,
-                                     tra_moved_so_far=return_best_path_so_far(current_node=current_node)))
+                                     tra_moved_so_far=return_best_path_so_far(current_node=current_node)
+                                     if type_astar == 1 else None))
 
             total_g_normalised = _standard_normalisation(old_value=child.g, old_min=0, old_max=distance_target + 100,
                                                          new_min=0, new_max=10)
@@ -271,7 +273,7 @@ def _compute_h(distance_to_end, genome, current_position, K,
         # now higher it is, better it is
         # value = total_charge_normalised
     elif type_astar == 1:  # movement to the highest fitness achievable balanced attraction and distance
-        total_charge = compute_fintess_trajectory(tra_moved_so_far=tra_moved_so_far)
+        total_charge, _ = compute_fintess_trajectory(tra_moved_so_far=tra_moved_so_far)
 
         if total_charge < -700:
             total_charge = -700
