@@ -15,36 +15,23 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
-import glob
 import logging
-import pickle
-
 import numpy as np
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 from tqdm import tqdm, trange
 
-from src.Analysis.Utils.funcs import sorted_nicely, compute_direction
+from src.Analysis.Utils.funcs import compute_direction
+from src.Analysis.data_loader import DataLoader
 from src.Helpers.Fitness.ValueGraphFitness import convert, MAX_FITNESS
 from src.Settings.args import args
 from src.Utils.Funcs import compute_fintess_trajectory
-from src.Utils.Point import Point
 
 
-class analise_a_star(object):
+class AstarFitnessAnalyser(DataLoader):
     def __init__(self, log):
-        self._log = log
-        self._tra_generated = []
-
-    def read_data(self, path):
-        # read all the folders
-        folders = sorted_nicely(glob.glob("{}*/".format(path)))
-        for fold in tqdm(folders, desc="reading folders"):
-            read_file = "{}/paths_0.pickle".format(fold)
-            data = pickle.load(open(read_file, 'rb'))
-            self._tra_generated.append(data)
-        self._log.info("Data Read")
+        super().__init__(log)
 
     def print_fitness_per_tra(self, name_to_save, path_to_save):
         # need to check from the same starting points with different behaviours
@@ -56,8 +43,8 @@ class analise_a_star(object):
         for i in range(args.n_tra_generated):
             # make the trajectories readable
             current_analysed = []
-            for j in range(len(self._tra_generated)):
-                tra_points = self._tra_generated[j][i]
+            for j in range(len(self._paths_generated)):
+                tra_points = self._paths_generated[j][i]
 
                 current_analysed.append(tra_points)
 
@@ -132,7 +119,7 @@ if __name__ == '__main__':
     logger.addHandler(ch)
     logger.info("Starting script")
 
-    a = analise_a_star(log=logger)
+    a = AstarFitnessAnalyser(log=logger)
     a.read_data(path="/Users/alessandrozonta/PycharmProjects/astar/output/test_astar_attraction/")
     a.print_fitness_per_tra(name_to_save="normal_astar_attraction",
                             path_to_save="/Users/alessandrozonta/PycharmProjects/astar/output/")

@@ -24,9 +24,8 @@ from src.Settings.args import args
 
 
 class SubMatrix(object):
-    def __init__(self, log, apf, list_points, values_matrix, save_and_store=True):
+    def __init__(self, log, list_points, values_matrix, save_and_store=True):
         self._log = log
-        self._apf = apf
         self._list_points = list_points
         self._list_of_cells = None
         self._match_key_index = None
@@ -69,7 +68,6 @@ class SubMatrix(object):
         #
         # # for performance support
         self._log = None
-        self._apf = None
         self._list_points = None
 
     def get_max_min_matrix(self):

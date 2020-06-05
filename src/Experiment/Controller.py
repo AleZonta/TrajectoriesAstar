@@ -62,7 +62,7 @@ class Controller(object):
         self._loader_genome_meaning = GenomeMeaning(logger=self._logger)
         self._loader_genome_meaning.load_data(test=False)
 
-        self._sub_matrix = SubMatrix(log=self._logger, apf=self._loader_apf.apf,
+        self._sub_matrix = SubMatrix(log=self._logger,
                                      list_points=self._loader_genome_meaning.name_typologies,
                                      values_matrix=(self._loader_apf.x_values, self._loader_apf.y_values))
         self._sub_matrix.divide_into_cells()
