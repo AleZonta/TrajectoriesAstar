@@ -274,6 +274,8 @@ def _compute_h(distance_to_end, genome, current_position, K,
         # value = total_charge_normalised
     elif type_astar == 1:  # movement to the highest fitness achievable balanced attraction and distance
         total_charge, _ = compute_fintess_trajectory(tra_moved_so_far=tra_moved_so_far)
+        total_charge_attraction = compute_charge_points(genome=genome, current_position=current_position, K=K,
+                                                        pre_matrix=pre_matrix)
 
         if total_charge < -700:
             total_charge = -700
@@ -289,9 +291,15 @@ def _compute_h(distance_to_end, genome, current_position, K,
         # but now I will use min max normaliser
         total_charge_normalised = _standard_normalisation(old_value=total_charge, old_min=-700, old_max=601, new_min=0,
                                                           new_max=10)
+        total_charge_attraction_normalised = _standard_normalisation(old_value=total_charge_attraction, old_min=0, old_max=10000,
+                                                                     new_min=0, new_max=10)
+        real_charge = total_charge_normalised * total_charge_attraction_normalised
+        real_charge_normalised = _standard_normalisation(old_value=real_charge, old_min=0, old_max=100, new_min=0,
+                                                         new_max=10)
+
         distance_to_end_normalised = _standard_normalisation(old_value=distance_to_end, old_min=0, old_max=10000,
                                                              new_min=0, new_max=10)
-        value = (1 - delta) * total_charge_normalised + delta * distance_to_end_normalised
+        value = (1 - delta) * real_charge_normalised + delta * distance_to_end_normalised
         # now higher it is, better it is
     else:
         raise Exception("astar typology not implemented")

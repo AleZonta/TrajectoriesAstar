@@ -47,7 +47,8 @@ class PrintTrajectories(DataLoader):
                 os.mkdir(path_here)
             else:
                 path_here = None
-            for tra_idx, tra in tqdm(enumerate(attraction_variant), desc="printing trajectories variant {}".format(idx)):
+            for tra_idx, tra in tqdm(enumerate(attraction_variant),
+                                     desc="printing trajectories variant {}".format(idx)):
                 x = []
                 y = []
                 combinations = {}
@@ -101,7 +102,6 @@ class PrintTrajectories(DataLoader):
                 plt.close()
 
 
-
 if __name__ == '__main__':
     logger = logging.getLogger("LoadTrajectories")
     logger.setLevel(logging.DEBUG)
@@ -116,6 +116,6 @@ if __name__ == '__main__':
     logger.info("Starting script")
 
     a = PrintTrajectories(log=logger)
-    a.read_data(path="/Users/alessandrozonta/PycharmProjects/astar/output/test_astar_attraction/")
-    # a.print_paths(path="/Users/alessandrozonta/PycharmProjects/astar/output/", name="astar_attraction_trajectories")
-    a.print_paths(apf=True)
+    a.read_data(path="/Users/alessandrozonta/PycharmProjects/astar/output/test_astar/")
+    a.print_paths(path="/Users/alessandrozonta/PycharmProjects/astar/output/", name="astar_trajectories", apf=True)
+    # a.print_paths(apf=True)

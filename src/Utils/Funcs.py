@@ -15,6 +15,8 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
+import math
+
 import numpy as np
 from scipy.spatial import distance
 
@@ -149,6 +151,7 @@ def compute_fintess_trajectory(tra_moved_so_far):
 
     out, _, _, _ = get_fitness_value(length=total_length, curliness=curliness,
                                      further_distance=further_distance_to_point)
+
     return out, [total_length, curliness, further_distance_to_point, distance_to_middle_point, distance_to_end_point]
 
 
@@ -187,3 +190,16 @@ def keep_only_points_on_street(apf, points):
     return points_on_street
 
 
+COMPASS_BRACKETS = ["N", "NE", "E", "SE", "S", "SW", "W", "NW", "N"]
+
+
+def compute_direction_angle(origin, destination):
+    deltaX = destination.x - origin.x
+    deltaY = destination.y - origin.y
+    degrees_temp = math.atan2(deltaX, deltaY) / math.pi * 180
+    if degrees_temp < 0:
+        degrees_final = 360 + degrees_temp
+    else:
+        degrees_final = degrees_temp
+
+    return degrees_final

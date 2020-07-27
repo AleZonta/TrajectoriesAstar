@@ -33,7 +33,7 @@ def prepare_parser():
                         help="0 balance attraction and distance, 1 balanced fitness and distance")
 
     # general settings
-    parser.add_argument("--name_exp", default="test_astar_attraction")
+    parser.add_argument("--name_exp", default="test_astar_attraction_new_version")
     parser.add_argument("--data_path", default="/Users/alessandrozonta/PycharmProjects/astar/data/")
     parser.add_argument("--output_path", default="/Users/alessandrozonta/PycharmProjects/astar/output/")
     parser.add_argument("--apf_name", default="the_right_one_fast")
