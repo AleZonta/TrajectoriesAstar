@@ -50,7 +50,7 @@ class FindPlacesOnRoutes(object):
         :return:
         """
         self.log.debug("Loading point already found in advance...")
-        starting_point_train = np.load("{}/real_tra_test_starting_points.npy".format(args.data_path), allow_pickle=True)
+        starting_point_train = np.load("{}/real_tra_train_starting_points.npy".format(args.data_path), allow_pickle=True)
         self.values = starting_point_train
 
     def get_point(self, idx_tra):

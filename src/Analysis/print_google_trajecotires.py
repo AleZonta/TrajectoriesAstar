@@ -79,6 +79,6 @@ if __name__ == '__main__':
     logger.info("Starting script")
 
     a = PrintTrajectories(log=logger)
-    a.read_data(path="/Users/alessandrozonta/PycharmProjects/astar/output/test_astar/")
-    a.print_paths(path="/Users/alessandrozonta/PycharmProjects/astar/output/", name="test_new_pictures")
+    a.read_data(path="/Users/alessandrozonta/PycharmProjects/astar/output/generate_more_trajectories_bis/")
+    a.print_paths(path="/Users/alessandrozonta/PycharmProjects/astar/output/generate_more_trajectories_bis/", name="more_tra_google")
     # a.print_paths(apf=True)
