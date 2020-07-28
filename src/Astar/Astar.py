@@ -1,6 +1,6 @@
 """
-GTEA. Turing Learning system to generate trajectories
-Copyright (C) 2018  Alessandro Zonta (a.zonta@vu.nl)
+TrajectoriesAstar. Towards a human-like movements generator based on environmental features
+Copyright (C) 2020  Alessandro Zonta (a.zonta@vu.nl)
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -48,6 +48,11 @@ class Node(object):
 
 
 def return_best_path_so_far(current_node):
+    """
+    As the name of the method say, return the best path so far
+    :param current_node: current node
+    :return: path beginning to now
+    """
     path = []
     current = current_node
     while current is not None:
@@ -242,7 +247,6 @@ def _compute_h(distance_to_end, genome, current_position, K,
     The value is then multiplied by a constant 10
     :param distance_to_end: heart distance to the end
     :param genome: genome
-    :param genome_meaning: meaning if every pos of the genome
     :param current_position: current position
     :param K: constant for the computation of the charge
     :param pre_matrix: pre computation of distance from the cell to the objects

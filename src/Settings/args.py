@@ -1,6 +1,6 @@
 """
-TLSTM. Turing Learning system to generate trajectories
-Copyright (C) 2018  Alessandro Zonta (a.zonta@vu.nl)
+TrajectoriesAstar. Towards a human-like movements generator based on environmental features
+Copyright (C) 2020  Alessandro Zonta (a.zonta@vu.nl)
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -42,8 +42,9 @@ def prepare_parser():
     parser.add_argument("--total_distance_to_travel", type=int, default=5000)
 
     # fitness settings
-    parser.add_argument("--point_distance", type=eval, help="Select witch term to use for fitness only distance to "
-                                                            "central point")
+    parser.add_argument("--point_distance", type=eval, choices=["[0]", "[1]", "[2]", "[0, 1]", "[0, 2]", "[0, 1, 2]",
+                                                                "[1, 2]"],
+                        help="Select witch term to use for fitness only distance to ""central point")
     return parser
 
 

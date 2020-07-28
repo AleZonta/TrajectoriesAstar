@@ -1,6 +1,6 @@
 """
-TLSTM. Turing Learning system to generate trajectories
-Copyright (C) 2018  Alessandro Zonta (a.zonta@vu.nl)
+TrajectoriesAstar. Towards a human-like movements generator based on environmental features
+Copyright (C) 2020  Alessandro Zonta (a.zonta@vu.nl)
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -28,10 +28,22 @@ class PrintReal(object):
         self._tra = None
 
     def read_data(self, path):
+        """
+        Read real trajectories
+        :param path: path where to find the real trajectories
+        :return:
+        """
         with open(path, 'r') as f:
             self._tra = json.load(f)
 
     def print_tra(self, path_to_save):
+        """
+        Print real trajectories over a OSM overlay
+        :param path_to_save: where to save the trajectories
+        :return:
+        """
+        if self._tra is None:
+            raise FileNotFoundError("Load trajectories first")
 
         path_here = "{}/google_pics/".format(path_to_save)
         os.makedirs(path_here, exist_ok=True)

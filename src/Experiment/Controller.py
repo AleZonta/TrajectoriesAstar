@@ -1,6 +1,6 @@
 """
-TLSTM. Turing Learning system to generate trajectories
-Copyright (C) 2018  Alessandro Zonta (a.zonta@vu.nl)
+TrajectoriesAstar. Towards a human-like movements generator based on environmental features
+Copyright (C) 2020  Alessandro Zonta (a.zonta@vu.nl)
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -34,6 +34,14 @@ def worker_job_lib(individual, idx):
 
 
 def save_data(vector_data, save_path, name, version):
+    """
+    Save data on pickle files
+    :param vector_data: data to save
+    :param save_path: path where to save to
+    :param name: name file
+    :param version: version of the file
+    :return:
+    """
     all_real_points = []
     for el in vector_data:
         real_points = []
@@ -79,6 +87,14 @@ class Controller(object):
         self._list_genome = vector_data
 
     def initialise_individual_and_run(self, save_path, how_many, version="0", debug=False):
+        """
+        Initialise algorithm and generate the trajectories
+        :param save_path: path to save the result to
+        :param how_many: number of trajectories to generate
+        :param version:
+        :param debug: serial execution or not
+        :return:
+        """
         individual = TrajectoryGeneration(x_value=args.x_value,
                                           genotype=self._list_genome,
                                           values_matrix=(self._loader_apf.x_values, self._loader_apf.y_values),

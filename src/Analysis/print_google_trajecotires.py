@@ -1,6 +1,6 @@
 """
-TLSTM. Turing Learning system to generate trajectories
-Copyright (C) 2018  Alessandro Zonta (a.zonta@vu.nl)
+TrajectoriesAstar. Towards a human-like movements generator based on environmental features
+Copyright (C) 2020  Alessandro Zonta (a.zonta@vu.nl)
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -29,7 +29,12 @@ class PrintTrajectories(DataLoader):
         super().__init__(log)
 
     def print_paths(self, path=None, name=None):
-
+        """
+        Print the trajectories over a OSM overlay
+        :param path: path where to save the files
+        :param name: name of the folder where to save
+        :return:
+        """
         if path is not None:
             path = "{}/{}/".format(path, name)
             os.mkdir(path)
@@ -56,14 +61,6 @@ class PrintTrajectories(DataLoader):
                 m.add_children(my_PolyLine)
                 m.save("{}/real_map_{}.html".format(path_here, tra_idx))
 
-                # gmap3.scatter(y, x, '# FF0000',
-                #               size=2, marker=False)
-                #
-                # gmap3.plot(y, x,
-                #            'cornflowerblue', edge_width=2.5)
-                #
-                # gmap3.draw("{}/test_map_{}.html".format(path_here, tra_idx))
-
 
 if __name__ == '__main__':
     logger = logging.getLogger("LoadTrajectories")
@@ -80,5 +77,5 @@ if __name__ == '__main__':
 
     a = PrintTrajectories(log=logger)
     a.read_data(path="/Users/alessandrozonta/PycharmProjects/astar/output/generate_more_trajectories_bis/")
-    a.print_paths(path="/Users/alessandrozonta/PycharmProjects/astar/output/generate_more_trajectories_bis/", name="more_tra_google")
-    # a.print_paths(apf=True)
+    a.print_paths(path="/Users/alessandrozonta/PycharmProjects/astar/output/generate_more_trajectories_bis/",
+                  name="more_tra_google")

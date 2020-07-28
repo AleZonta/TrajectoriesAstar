@@ -1,6 +1,6 @@
 """
-TLSTM. Turing Learning system to generate trajectories
-Copyright (C) 2018  Alessandro Zonta (a.zonta@vu.nl)
+TrajectoriesAstar. Towards a human-like movements generator based on environmental features
+Copyright (C) 2020  Alessandro Zonta (a.zonta@vu.nl)
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -84,6 +84,12 @@ def is_in_list(list_of_points, point_to_check):
 
 
 def _get_direction(current_point, next_point):
+    """
+    From coordinates get direction used to reach the second point from the first one
+    :param current_point: current position
+    :param next_point: position moved
+    :return:
+    """
     x_value = int(current_point.x)
     y_value = int(current_point.y)
     x_value_next = int(next_point.x)
@@ -112,6 +118,11 @@ def _get_direction(current_point, next_point):
 
 
 def compute_fintess_trajectory(tra_moved_so_far):
+    """
+    Compute the fitness of the path moved so far
+    :param tra_moved_so_far: list of points moved till now
+    :return:
+    """
     # now I have trajectory and direction, need to compute the fitness
     # as distance I am using the number of timesteps of the trajectories
     total_length = len(tra_moved_so_far)
@@ -194,6 +205,12 @@ COMPASS_BRACKETS = ["N", "NE", "E", "SE", "S", "SW", "W", "NW", "N"]
 
 
 def compute_direction_angle(origin, destination):
+    """
+    return the angle of the direction from origin to destination
+    :param origin: origin of the trajectory
+    :param destination: last point of the trajectory
+    :return:
+    """
     deltaX = destination.x - origin.x
     deltaY = destination.y - origin.y
     degrees_temp = math.atan2(deltaX, deltaY) / math.pi * 180

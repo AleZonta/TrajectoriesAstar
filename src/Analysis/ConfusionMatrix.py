@@ -1,6 +1,6 @@
 """
-TLSTM. Turing Learning system to generate trajectories
-Copyright (C) 2018  Alessandro Zonta (a.zonta@vu.nl)
+TrajectoriesAstar. Towards a human-like movements generator based on environmental features
+Copyright (C) 2020  Alessandro Zonta (a.zonta@vu.nl)
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -16,8 +16,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 """
-TLSTM. Turing Learning system to generate trajectories
-Copyright (C) 2018  Alessandro Zonta (a.zonta@vu.nl)
+TrajectoriesAstar. Towards a human-like movements generator based on environmental features
+Copyright (C) 2020  Alessandro Zonta (a.zonta@vu.nl)
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -116,17 +116,6 @@ def plot_confusion_matrix(cm,
 
 matplotlib.rcParams.update({'font.size': 15})
 
-# plot_confusion_matrix(cm=np.array([[1, 19],
-#                                    [7, 13]]),
-#                       normalize=False,
-#                       target_names=['generated trajectory', 'real trajectory'],
-#                       title="Confusion Matrix")
-# plot_confusion_matrix(cm=np.array([[0, 20],
-#                                    [0, 20]]),
-#                       normalize=False,
-#                       target_names=['generated trajectory', 'real trajectory'],
-#                       title="Confusion Matrix")
-#
 from sklearn.metrics import f1_score, accuracy_score, precision_score, recall_score, confusion_matrix
 
 
@@ -147,11 +136,3 @@ plot_confusion_matrix(cm=np.array([[4, 16],
                       target_names=['generated trajectory', 'real trajectory'],
                       title="Confusion Matrix")
 
-# print("----ideal----")
-# y_true = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
-# y_pred = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-# print(accuracy_score(y_true, y_pred))
-# print(precision_score(y_true, y_pred))
-# print(recall_score(y_true, y_pred))
-#
-# print(f1_score(y_true, y_pred))

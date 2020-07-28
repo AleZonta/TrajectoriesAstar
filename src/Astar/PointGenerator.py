@@ -1,6 +1,6 @@
 """
-GTEA. Turing Learning system to generate trajectories
-Copyright (C) 2018  Alessandro Zonta (a.zonta@vu.nl)
+TrajectoriesAstar. Towards a human-like movements generator based on environmental features
+Copyright (C) 2020  Alessandro Zonta (a.zonta@vu.nl)
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -38,14 +38,12 @@ class PointGenerator(object):
         """
         Return the path with the method chosen to use
         :param total_distance:  total distance to travel
-        :param name_and_position: name and position objects
         :param genome: genome
         :param genome_meaning: meaning if every pos of the genome
         :param values_matrix: values to translate cells to coordinates
         :param K: constant for the computation of the charge
         :param distances: vector with distances positions
         :param current_node: current node
-        :param end_node: target node
         :param apf: apf
         :return: path generated
         """

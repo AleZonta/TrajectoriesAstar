@@ -1,6 +1,6 @@
 """
-TLSTM. Turing Learning system to generate trajectories
-Copyright (C) 2018  Alessandro Zonta (a.zonta@vu.nl)
+TrajectoriesAstar. Towards a human-like movements generator based on environmental features
+Copyright (C) 2020  Alessandro Zonta (a.zonta@vu.nl)
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -22,7 +22,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
-from tqdm import tqdm, trange
+from tqdm import tqdm
 from src.Analysis.data_loader import DataLoader
 from src.Loaders.LoadAPF import LoadAPF
 from src.Settings.args import args
@@ -36,7 +36,13 @@ class PrintTrajectories(DataLoader):
         self._loader_apf.load_apf_only_routing_system()
 
     def print_paths(self, path=None, name=None, apf=False):
-
+        """
+        Print all the path produced
+        :param path: where to save the data
+        :param name: name of the folder where to save the path
+        :param apf: print with or without road system
+        :return:
+        """
         if path is not None:
             path = "{}/{}/".format(path, name)
             os.mkdir(path)
@@ -118,4 +124,3 @@ if __name__ == '__main__':
     a = PrintTrajectories(log=logger)
     a.read_data(path="/Users/alessandrozonta/PycharmProjects/astar/output/test_astar/")
     a.print_paths(path="/Users/alessandrozonta/PycharmProjects/astar/output/", name="astar_trajectories", apf=True)
-    # a.print_paths(apf=True)

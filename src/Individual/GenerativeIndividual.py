@@ -1,6 +1,6 @@
 """
-GTEA. Turing Learning system to generate trajectories
-Copyright (C) 2018  Alessandro Zonta (a.zonta@vu.nl)
+TrajectoriesAstar. Towards a human-like movements generator based on environmental features
+Copyright (C) 2020  Alessandro Zonta (a.zonta@vu.nl)
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -63,7 +63,7 @@ class TrajectoryGeneration(object):
         -> transform path into trajectory
         :param random_seed: seed for random
         :param idx: index starting point
-        :return:
+        :return: total distance traveled, the final path, the real coordinates of the path, and the real trajecotry
         """
         random.seed(random_seed)
         np.random.seed(random_seed)

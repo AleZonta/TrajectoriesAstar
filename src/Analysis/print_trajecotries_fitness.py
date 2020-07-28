@@ -1,6 +1,6 @@
 """
-TLSTM. Turing Learning system to generate trajectories
-Copyright (C) 2018  Alessandro Zonta (a.zonta@vu.nl)
+TrajectoriesAstar. Towards a human-like movements generator based on environmental features
+Copyright (C) 2020  Alessandro Zonta (a.zonta@vu.nl)
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -34,6 +34,12 @@ class AstarFitnessAnalyser(DataLoader):
         super().__init__(log)
 
     def print_fitness_per_tra(self, name_to_save, path_to_save):
+        """
+        From the output it generates the file with the features necessary to produce the graphs present on the paper
+        :param name_to_save: name of the files to save
+        :param path_to_save: path where to save
+        :return:
+        """
         # need to check from the same starting points with different behaviours
         # return all the tra same index
         df = pd.DataFrame(columns=['fitness', 'total_length', 'curliness', "f_d_to_p",
@@ -99,6 +105,12 @@ class AstarFitnessAnalyser(DataLoader):
         self._log.info("Data Saved!")
 
     def print_graphs(self, path_to_read, name_to_read):
+        """
+        Print the features just obtained into a graph
+        :param path_to_read: path where to find the features produced
+        :param name_to_read: name of the filew
+        :return:
+        """
         df = pd.read_hdf("{}/{}".format(path_to_read, name_to_read))
         sns.boxplot(data=df)
         sns.despine(offset=10, trim=True)

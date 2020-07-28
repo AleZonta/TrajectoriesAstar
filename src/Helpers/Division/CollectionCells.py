@@ -1,6 +1,6 @@
 """
-GTEA. Turing Learning system to generate trajectories
-Copyright (C) 2018  Alessandro Zonta (a.zonta@vu.nl)
+TrajectoriesAstar. Towards a human-like movements generator based on environmental features
+Copyright (C) 2020  Alessandro Zonta (a.zonta@vu.nl)
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -113,6 +113,10 @@ class CollectionCells(object):
         return self._list_cells[id]
 
     def load_mmap_data(self):
+        """
+        Load mmap data with the preloaded distances (performance reason)
+        :return:
+        """
         name_file = "{}/cell_data_to_mmap.dat".format(args.data_path)
         data_input = np.memmap(name_file, dtype='float32', mode='r', shape=(154, 155, 6, 2, 1600))
         count = 0

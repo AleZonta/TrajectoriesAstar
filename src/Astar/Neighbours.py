@@ -1,6 +1,6 @@
 """
-GTEA. Turing Learning system to generate trajectories
-Copyright (C) 2018  Alessandro Zonta (a.zonta@vu.nl)
+TrajectoriesAstar. Towards a human-like movements generator based on environmental features
+Copyright (C) 2020  Alessandro Zonta (a.zonta@vu.nl)
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -60,7 +60,6 @@ def chain_of_neighbours(total_distance, genome, genome_meaning, values_matrix, K
 
         # compute charge close points
         charges = [compute_charge_points(genome=genome,
-                                         genome_meaning=genome_meaning,
                                          current_position=current_position, K=K, pre_matrix=pre_matrix) for
                    current_position in points_on_the_street]
 
