@@ -21,6 +21,7 @@ It implements the normal two modifications of the normal A* algorithm employed t
 
 ## Data
 Download the dataset used from [here](https://doi.org/10.5281/zenodo.3964449) and place it in data.
+Update path on the setting file accordingly
 
 ## Run the experiments
 * check if all the path are corrects in the settings of the various scripts
